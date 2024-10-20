@@ -1,0 +1,386 @@
+// Enums
+enum AdsType {
+    AREA,
+    FLASH_SALE,
+    BANNER
+}
+
+enum BlogStatus {
+    DISABLED,
+    ACTIVE,
+    INACTIVE,
+    PENDING
+}
+
+enum EntityStatus {
+    DISABLED,
+    ACTIVE,
+    INACTIVE
+}
+
+enum LocationBookingStatus {
+    FAILED,
+    DRAFT,
+    PENDING,
+    CONFIRMED,
+    CANCELLED,
+    SUCCESSFUL
+}
+
+enum OfferStatus {
+    INACTIVE,
+    ACTIVE,
+    EXPIRE,
+    DISABLED
+}
+
+enum PaymentStatus {
+    PAID,
+    UNPAID,
+    NEED_CONFIRMATION
+}
+
+enum PromotionType {
+    BILL,
+    PEOPLE,
+    TIME
+}
+
+enum ReportType {
+    ABOUT_STAFF,
+    ABOUT_FOOD,
+    ABOUT_SERVICE,
+    ABOUT_LOCATION,
+    ABOUT_SYSTEM
+}
+
+enum DayInWeek {
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    SUNDAY
+}
+
+// Entities
+entity Address {
+    addressLine String required,
+    district String required,
+    isDefault Boolean required,
+    city String required
+}
+
+entity Ads {
+    name String required,
+    price BigDecimal required,
+    description TextBlob required,
+    type AdsType required,
+    level Integer required,
+    status EntityStatus required,
+    image String required,
+    duration Integer required
+}
+
+entity AdsRegistration {
+    registrationDate Instant required,
+    expireDate Instant required,
+    status OfferStatus required
+    // Removed ads and location properties from here
+}
+
+entity Brand {
+    name String required,
+    status EntityStatus required,
+    image String required
+}
+
+entity Category {
+    image String required,
+    name String required,
+    status EntityStatus required
+}
+
+entity Food {
+    name String required,
+    price BigDecimal required,
+    description TextBlob required,
+    status EntityStatus required,
+    image String required
+}
+
+entity FoodBooking {
+    paymentDate Instant,
+    quantity Integer required,
+    amount BigDecimal required
+}
+
+entity FoodCategory {
+    image String required,
+    name String required
+}
+
+entity Location {
+    name String required,
+    address String required,
+    phone String required,
+    onSuggest Integer required,
+    onSale Integer required,
+    onBanner Integer required,
+    view Integer required,
+    rating Integer required,
+    latitude Double required,
+    longitude Double required,
+    geoHashCode String required,
+    description TextBlob required,
+    status EntityStatus required,
+    image String required
+}
+
+entity LocationBooking {
+    name String required,
+    address String required,
+    phone String required,
+    bookingDate LocalDate required,
+    bookingTime String required, // Using String to represent time
+    numberOfGuest Integer required,
+    numberOfAdult Integer required,
+    numberOfChildren Integer required,
+    amount BigDecimal,
+    commission BigDecimal,
+    status LocationBookingStatus required
+}
+
+entity LocationCategory {
+}
+
+entity LocationFeedback {
+    content TextBlob required,
+    rating Integer required,
+    feedbackDate LocalDate required,
+    numberOfGuest Integer required,
+    image String required
+}
+
+entity LocationTag {
+}
+
+entity Notification {
+    recipientType String required,
+    notificationType String required,
+    title String required,
+    summary TextBlob required,
+    content TextBlob required,
+    image String required,
+    status EntityStatus required,
+    sendDate Instant required
+}
+
+entity PackageEntity { // Renamed from 'Package' to 'PackageEntity'
+    name String required,
+    price BigDecimal required,
+    description TextBlob required,
+    status OfferStatus required,
+    image String required,
+    duration String required
+}
+
+entity PackageAds {
+}
+
+entity PackageRegistration {
+    registrationDate Instant required,
+    expireDate Instant required,
+    status Boolean required
+}
+
+entity PaymentHistory {
+    totalAmount BigDecimal required,
+    status PaymentStatus required
+}
+
+entity PaymentMethod {
+    type String required,
+    status EntityStatus required
+}
+
+entity PointTransaction {
+    transactionType String required,
+    points Long required,
+    transactionDate Instant required
+}
+
+entity Promotion {
+    title String required,
+    description TextBlob required,
+    status OfferStatus required,
+    type String required,
+    image String required,
+    startDate Instant required,
+    endDate Instant required,
+    discountValue BigDecimal,
+    maxDiscount BigDecimal,
+    freeItem String,
+    minBill BigDecimal,
+    minPeople Integer,
+    startHourTime String, // Using String to represent time
+    endHourTime String    // Using String to represent time
+}
+
+entity Report {
+    reportType ReportType required,
+    content String required,
+    contentAnswer String,
+    image String required,
+    status Boolean required
+}
+
+entity RoleEntity { // Renamed from 'Role' to 'RoleEntity'
+    name String required
+}
+
+entity SystemBlog {
+    title String required,
+    summary TextBlob required,
+    content TextBlob required,
+    status BlogStatus required,
+    image String required,
+    publishDate Instant
+}
+
+entity Tag {
+    name String required
+}
+
+entity Token {
+    accessToken String required,
+    refreshToken String required,
+    loggedOut Boolean required,
+    createdDate Instant required,
+    modifiedDate Instant
+}
+
+entity UserEntity { // Renamed to avoid conflict with built-in 'User'
+    userName String required unique,
+    fullName String required,
+    password String required,
+    email String required unique,
+    phone String required,
+    gender String required,
+    status EntityStatus required,
+    point Long required,
+    isFirstLogin Boolean required,
+    image String required,
+    createdDate Instant required,
+    modifiedDate Instant
+}
+
+entity UserVoucher {
+    status Boolean required,
+    quantityAvailable Integer required,
+    assignedDate Instant required,
+    usedDate Instant required
+}
+
+entity Voucher {
+    code String required unique,
+    name String required,
+    description TextBlob required,
+    quantity Integer required,
+    quantityUse Integer required,
+    discount BigDecimal required,
+    maxDiscountAmount BigDecimal required,
+    startDate Instant required,
+    endDate Instant required,
+    minOrderAmount BigDecimal required,
+    status OfferStatus required
+}
+
+entity WorkingHour {
+    day DayInWeek required,
+    startTime String required, // Using String to represent time
+    endTime String required    // Using String to represent time
+}
+
+// Relationships
+relationship ManyToOne {
+    Address{user(userName)} to UserEntity,
+    AdsRegistration{location} to Location,
+    AdsRegistration{ads} to Ads, // Ads and Location are only defined here
+    Food{foodCategory} to FoodCategory,
+    Food{location} to Location,
+    FoodBooking{locationBooking} to LocationBooking,
+    FoodBooking{food} to Food,
+    Location{userEntity(userName)} to UserEntity,
+    Location{brand} to Brand,
+    LocationBooking{location} to Location,
+    LocationBooking{userEntity(userName)} to UserEntity,
+    LocationBooking{voucher} to Voucher,
+    LocationBooking{promotion} to Promotion,
+    LocationFeedback{locationBooking} to LocationBooking,
+    LocationFeedback{userEntity(userName)} to UserEntity,
+    LocationTag{tag} to Tag,
+    LocationTag{location} to Location,
+    Notification{userEntity(userName)} to UserEntity,
+    PackageRegistration{location} to Location,
+    PackageRegistration{packageEntity} to PackageEntity,
+    PaymentHistory{locationBooking} to LocationBooking,
+    PaymentHistory{paymentMethod} to PaymentMethod,
+    PointTransaction{userEntity(userName)} to UserEntity,
+    Promotion{location} to Location,
+    Report{reporter(userName)} to UserEntity,
+    Report{answerer(userName)} to UserEntity,
+    SystemBlog{userEntity(userName)} to UserEntity,
+    Token{userEntity(userName)} to UserEntity,
+    UserEntity{roleEntity(name)} to RoleEntity,
+    UserVoucher{voucher} to Voucher,
+    UserVoucher{userEntity(userName)} to UserEntity,
+    WorkingHour{location} to Location
+}
+
+relationship OneToMany {
+    Ads{adsRegistrations} to AdsRegistration,
+    Ads{packageAds} to PackageAds,
+    Brand{locations} to Location,
+    Category{locationCategories} to LocationCategory,
+    FoodCategory{foods} to Food,
+    Location{packageRegistrations} to PackageRegistration,
+    Location{adsRegistrations} to AdsRegistration,
+    Location{promotions} to Promotion,
+    Location{locationBookings} to LocationBooking,
+    Location{locationTags} to LocationTag,
+    Location{foods} to Food,
+    Location{locationCategories} to LocationCategory,
+    Location{workingHours} to WorkingHour,
+    PackageEntity{packageRegistrations} to PackageRegistration,
+    PackageEntity{packageAds} to PackageAds,
+    PaymentMethod{paymentHistories} to PaymentHistory,
+    RoleEntity{userEntities} to UserEntity,
+    Tag{locationTags} to LocationTag,
+    UserEntity{tokens} to Token,
+    UserEntity{addresses} to Address,
+    UserEntity{pointTransactions} to PointTransaction,
+    UserEntity{systemBlogs} to SystemBlog,
+    UserEntity{reports} to Report{reporter},
+    UserEntity{reportAnswers} to Report{answerer},
+    UserEntity{notifications} to Notification,
+    UserEntity{userVouchers} to UserVoucher,
+    UserEntity{locationBookings} to LocationBooking,
+    UserEntity{locationFeedbacks} to LocationFeedback,
+    UserEntity{locations} to Location,
+    Voucher{userVouchers} to UserVoucher,
+    Voucher{locationBookings} to LocationBooking
+}
+
+// Service and DTO options
+service all with serviceImpl
+dto all with mapstruct
+
+// Exclude default User entity
+application {
+    config {
+        skipUserManagement true
+    }
+    entities *
+}
